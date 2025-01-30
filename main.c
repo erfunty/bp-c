@@ -49,13 +49,13 @@ void initialize()
 		} 
 	} 
 
-	int val = 5; 
+	int val = 6; 
 	while (val--) { 
-		int row = (rand() % (HEIGHT + 1)); 
-		for (int j = 3; j < WIDTH - 3; j++) { 
-			if (board[row][j] != WALL 
-				&& board[row][j] != PACMAN) { 
-				board[row][j] = WALL; 
+		int columns = (rand() % (WIDTH + 1)); 
+		for (int i = 3; i < HEIGHT - 3; i++) { 
+			if (board[i][columns] != WALL 
+				&& board[i][columns] != PACMAN) { 
+				board[i][columns] = WALL; 
 			} 
 		} 
 	} 
@@ -73,8 +73,8 @@ void initialize()
 	} 
 
 	// Cursor at Center 
-	pacman_x = 15; 
-	pacman_y = 18; 
+	pacman_x = WIDTH /2; 
+	pacman_y = HEIGHT / 2; 
 	board[pacman_y][pacman_x] = PACMAN; 
 
 	// Points Placed 
