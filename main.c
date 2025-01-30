@@ -7,13 +7,13 @@
 
 // All the elements to be used 
 // Declared here 
-#define WIDTH 60 
-#define HEIGHT 39 
-#define PACMAN 'o' 
-#define WALL 'm' 
-#define FOOD '*' 
+#define WIDTH 40 
+#define HEIGHT 20 
+#define PACMAN 'c' 
+#define WALL '#' 
+#define FOOD '.' 
 #define EMPTY ' ' 
-#define DEMON '?' 
+#define DEMON 'x' 
 
 // Global Variables are 
 // Declared here 
@@ -80,7 +80,7 @@ void initialize()
 	// Points Placed 
 	for (int i = 0; i < HEIGHT; i++) { 
 		for (int j = 0; j < WIDTH; j++) { 
-			if (i % 2 == 0 && j % 2 == 0 
+			if (i % 2 == 1 && j % 2 == 1 
 				&& board[i][j] != WALL 
 				&& board[i][j] != DEMON 
 				&& board[i][j] != PACMAN) { 
@@ -139,7 +139,7 @@ int main()
 { 
 	initialize(); 
 	char ch; 
-	food -= 35; 
+	food -= 50; 
 	int totalFood = food; 
 	// Instructions to Play 
 	printf(" Use buttons for w(up), a(left) , d(right) and "
