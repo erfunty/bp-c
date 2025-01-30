@@ -7,8 +7,8 @@
 
 // All the elements to be used 
 // Declared here 
-#define WIDTH 40 
-#define HEIGHT 20 
+#define WIDTH 60 
+#define HEIGHT 39 
 #define PACMAN 'o' 
 #define WALL 'm' 
 #define FOOD '*' 
