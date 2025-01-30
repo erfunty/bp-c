@@ -73,8 +73,8 @@ void initialize()
 	} 
 
 	// Cursor at Center 
-	pacman_x = WIDTH / 2; 
-	pacman_y = HEIGHT / 2; 
+	pacman_x = 15; 
+	pacman_y = 18; 
 	board[pacman_y][pacman_x] = PACMAN; 
 
 	// Points Placed 
