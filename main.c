@@ -9,11 +9,11 @@
 // Declared here 
 #define WIDTH 40 
 #define HEIGHT 20 
-#define PACMAN 'c' 
+#define PACMAN 'C' 
 #define WALL '#' 
 #define FOOD '.' 
 #define EMPTY ' ' 
-#define DEMON 'x' 
+#define DEMON 'X' 
 
 // Global Variables are 
 // Declared here 
@@ -22,7 +22,27 @@ int score = 0;
 int pacman_x, pacman_y; 
 char board[HEIGHT][WIDTH]; 
 int food = 0; 
-int curr = 0; 
+int curr = 0;
+
+int saveg(){
+	FILE *savefile=fopen("saved_game","wb");
+	if(savefile==NULL){
+		printf("error loading game...");
+		return 1;
+	}
+	fwrite(board,sizeof(char),HEIGHT*WIDTH,savefile);
+	fclose(savefile);
+}
+
+int loadgame(){
+	FILE *savefile=fopen("saved_game","rb");
+	if(savefile==NULL){
+		printf("error loading game...");
+		return 1;
+	}
+	fread(board,sizeof(char),HEIGHT*WIDTH,savefile);
+	fclose(savefile);
+}
 void initialize() 
 { 
 	// Putting Walls as boundary in the Game 
@@ -49,13 +69,13 @@ void initialize()
 		} 
 	} 
 
-	int val = 6; 
+	int val = 5; 
 	while (val--) { 
-		int columns = (rand() % (WIDTH + 1)); 
-		for (int i = 3; i < HEIGHT - 3; i++) { 
-			if (board[i][columns] != WALL 
-				&& board[i][columns] != PACMAN) { 
-				board[i][columns] = WALL; 
+		int row = (rand() % (HEIGHT + 1)); 
+		for (int j = 3; j < WIDTH - 3; j++) { 
+			if (board[row][j] != WALL 
+				&& board[row][j] != PACMAN) { 
+				board[row][j] = WALL; 
 			} 
 		} 
 	} 
@@ -73,14 +93,14 @@ void initialize()
 	} 
 
 	// Cursor at Center 
-	pacman_x = WIDTH /2; 
+	pacman_x = WIDTH / 2; 
 	pacman_y = HEIGHT / 2; 
 	board[pacman_y][pacman_x] = PACMAN; 
 
 	// Points Placed 
 	for (int i = 0; i < HEIGHT; i++) { 
 		for (int j = 0; j < WIDTH; j++) { 
-			if (i % 2 == 1 && j % 2 == 1 
+			if (i % 2 == 0 && j % 2 == 0 
 				&& board[i][j] != WALL 
 				&& board[i][j] != DEMON 
 				&& board[i][j] != PACMAN) { 
@@ -137,13 +157,24 @@ void move(int move_x, int move_y)
 // Main Function 
 int main() 
 { 
-	initialize(); 
-	char ch; 
-	food -= 50; 
+	char ch,sch; 
+	food -= 35; 
 	int totalFood = food; 
 	// Instructions to Play 
 	printf(" Use buttons for w(up), a(left) , d(right) and "
-		"s(down)\nAlso, Press q for quit\n"); 
+		"s(down)\nAlso, Press q for quit and p for save.\n"); 
+    printf("Do you want to continue the previous game?\nY\nN\n");
+	sch = getch(); 
+	if (sch != 'Y' && sch != 'y'&& sch != 'n' && sch != 'N') { 
+		printf("Exit Game! "); 
+		return 1; 
+	} 
+	if(sch == 'Y' || sch == 'y'){
+		loadgame();
+	}
+	if(sch == 'n' || sch == 'N'){
+		initialize();
+	}
 
 	printf("Enter Y to continue: \n"); 
 
@@ -191,6 +222,9 @@ int main()
 		case 'd': 
 			move(1, 0); 
 			break; 
+		case 'p':
+		    saveg();
+			return 0;
 		case 'q': 
 			printf("Game Over! Your Score: %d\n", score); 
 			return 0; 
