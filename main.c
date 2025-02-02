@@ -25,7 +25,7 @@ int food = 0;
 int curr = 0;
 
 int saveg(){
-	FILE *savefile=fopen("saved_game","wb");
+	FILE *savefile=fopen("saved_game.bin","wb");
 	if(savefile==NULL){
 		printf("error loading game...");
 		return 1;
@@ -35,13 +35,30 @@ int saveg(){
 }
 
 int loadgame(){
-	FILE *savefile=fopen("saved_game","rb");
+	FILE *savefile=fopen("saved_game.bin","rb");
 	if(savefile==NULL){
 		printf("error loading game...");
 		return 1;
 	}
 	fread(board,sizeof(char),HEIGHT*WIDTH,savefile);
 	fclose(savefile);
+	int foundc=0;
+	for(int i=0;i<HEIGHT;i++){
+		for(int j=0;j<WIDTH;j++){
+			if(board[i][j]==PACMAN){
+				pacman_x=j;
+				pacman_y=i;
+				foundc=1;
+				break;
+			}
+
+		}
+	}
+	if (!foundc) {
+        printf("Pacman not found in loaded game!\n");
+        return 1;
+    }
+
 }
 void initialize() 
 { 
@@ -224,7 +241,7 @@ int main()
 			break; 
 		case 'p':
 		    saveg();
-			return 0;
+			
 		case 'q': 
 			printf("Game Over! Your Score: %d\n", score); 
 			return 0; 
