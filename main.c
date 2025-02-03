@@ -14,7 +14,8 @@
 #define WALL '#' 
 #define FOOD '.' 
 #define EMPTY ' ' 
-#define DEMON 'X' 
+#define DEMON 'X'
+#define PRIZE '$' 
 
 // Global Variables are 
 // Declared here 
@@ -24,6 +25,7 @@ int pacman_x, pacman_y;
 char board[HEIGHT][WIDTH]; 
 int food = 0; 
 int curr = 0;
+int cspeed=0;
 
 int saveg(){
 	FILE *savefile=fopen("saved_game.bin","wb");
@@ -114,7 +116,18 @@ void initialize()
 			board[i][j] = DEMON; 
 			count--; 
 		} 
-	} 
+	}
+	// Putting prize in the Game 
+	count = 5; 
+	while (count != 0) { 
+		int i = (rand() % (HEIGHT + 1)); 
+		int j = (rand() % (WIDTH + 1)); 
+
+		if (board[i][j] != WALL && board[i][j] != PACMAN) { 
+			board[i][j] = PRIZE; 
+			count--; 
+		} 
+	}
 
 	// Cursor at Center 
 	pacman_x = WIDTH / 2; 
@@ -126,6 +139,7 @@ void initialize()
 		for (int j = 0; j < WIDTH; j++) { 
 			if (i % 2 == 0 && j % 2 == 0 
 				&& board[i][j] != WALL 
+				&& board[i][j] != PRIZE
 				&& board[i][j] != DEMON 
 				&& board[i][j] != PACMAN) { 
 
@@ -154,6 +168,37 @@ void draw()
 // Function enables to move the Cursor 
 void move(int move_x, int move_y) 
 { 
+	while (cspeed>0)
+	{
+	int x = pacman_x + 2*move_x; 
+	int y = pacman_y + 2*move_y; 
+
+	if (board[y][x] != WALL) { 
+		if (board[y][x] == FOOD) { 
+			score++; 
+			food--; 
+			curr++; 
+			if (food == 0) { 
+				res = 2; 
+				return; 
+			} 
+		} 
+		else if(board[y][x] == PRIZE){
+			cspeed+=10;
+		}
+		else if (board[y][x] == DEMON) { 
+			res = 1; 
+		} 
+
+		board[pacman_y][pacman_x] = EMPTY; 
+		pacman_x = x; 
+		pacman_y = y; 
+		board[pacman_y][pacman_x] = PACMAN; 
+	} 
+	    cspeed--;
+		break;
+	}
+	
 	int x = pacman_x + move_x; 
 	int y = pacman_y + move_y; 
 
@@ -167,6 +212,9 @@ void move(int move_x, int move_y)
 				return; 
 			} 
 		} 
+		else if(board[y][x] == PRIZE){
+			cspeed+=10;
+		}
 		else if (board[y][x] == DEMON) { 
 			res = 1; 
 		} 
@@ -179,7 +227,6 @@ void move(int move_x, int move_y)
 } 
 int random_move(int *totalFood){
 	int rch;
-	printf("To exit the auto-play,Enter z.");
 	while(1){
 		draw();
 		if (kbhit()) {
@@ -191,7 +238,8 @@ int random_move(int *totalFood){
 		}
 
 		printf("Total Food count: %d\n", totalFood); 
-		printf("Total Food eaten: %d\n", curr); 
+		printf("Total Food eaten: %d\n", curr);
+		printf("To exit the auto-play,Enter z."); 
 		if (res == 1) { 
 			// Clear screen 
 			system("cls"); 
@@ -235,7 +283,7 @@ int main()
     int totalFood;
 	// Instructions to Play 
 	printf(" Use buttons for w(up), a(left) , d(right) and "
-		"s(down)\nAlso, Press q for quit and p for save.\n"); 
+		"s(down)\nAlso, Press q for quit and p for saveand r for auto-play.\n"); 
     printf("Do you want to continue the previous game?\nY\nN\n");
 	sch = getch(); 
 	if (sch != 'Y' && sch != 'y'&& sch != 'n' && sch != 'N') { 
