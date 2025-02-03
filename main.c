@@ -3,7 +3,8 @@
 // Pacman Game in C language 
 #include <conio.h> 
 #include <stdio.h> 
-#include <stdlib.h> 
+#include <stdlib.h>
+#include <windows.h> 
 
 // All the elements to be used 
 // Declared here 
@@ -45,6 +46,9 @@ int loadgame(){
 	int foundc=0;
 	for(int i=0;i<HEIGHT;i++){
 		for(int j=0;j<WIDTH;j++){
+			if(board[i][j]==FOOD){
+				food++;
+			}
 			if(board[i][j]==PACMAN){
 				pacman_x=j;
 				pacman_y=i;
@@ -170,13 +174,62 @@ void move(int move_x, int move_y)
 		board[pacman_y][pacman_x] = PACMAN; 
 	} 
 } 
+int random_move(int *totalFood){
+	int rch;
+	printf("To exit the auto-play,Enter z.");
+	while(1){
+		draw();
+		if (kbhit()) {
+		rch=getch();
+		if (rch == 'z' || rch == 'Z') { 
+	        printf("Exit Game! "); 
+		    break; 
+	    } 
+		}
 
+		printf("Total Food count: %d\n", totalFood); 
+		printf("Total Food eaten: %d\n", curr); 
+		if (res == 1) { 
+			// Clear screen 
+			system("cls"); 
+			printf("Game Over! Dead by Demon\n Your Score: "
+				"%d\n", 
+				score); 
+			return 1; 
+		} 
+
+		if (res == 2) { 
+			// Clear screen 
+			system("cls"); 
+			printf("You Win! \n Your Score: %d\n", score); 
+			return 1; 
+		} 
+
+		Sleep(1000);
+		int r=rand()%4;
+		switch (r) { 
+		case 0: 
+			move(0, -1); 
+			break; 
+		case 1: 
+			move(0, 1); 
+			break; 
+		case 2: 
+			move(-1, 0); 
+			break; 
+		case 3: 
+			move(1, 0); 
+			break;
+		}
+
+
+	}
+}
 // Main Function 
 int main() 
 { 
 	char ch,sch; 
-	food -= 35; 
-	int totalFood = food; 
+    int totalFood;
 	// Instructions to Play 
 	printf(" Use buttons for w(up), a(left) , d(right) and "
 		"s(down)\nAlso, Press q for quit and p for save.\n"); 
@@ -188,11 +241,13 @@ int main()
 	} 
 	if(sch == 'Y' || sch == 'y'){
 		loadgame();
+		totalFood = food;
 	}
 	if(sch == 'n' || sch == 'N'){
 		initialize();
+		food -= 35; 
+	    totalFood = food; 
 	}
-
 	printf("Enter Y to continue: \n"); 
 
 	ch = getch(); 
@@ -238,7 +293,10 @@ int main()
 			break; 
 		case 'd': 
 			move(1, 0); 
-			break; 
+			break;
+		case 'r':
+		    random_move(&totalFood);
+			break;
 		case 'p':
 		    saveg();
 			
