@@ -32,6 +32,7 @@ int saveg(){
 		return 1;
 	}
 	fwrite(board,sizeof(char),HEIGHT*WIDTH,savefile);
+	fwrite(&curr,sizeof(int),1,savefile);
 	fclose(savefile);
 }
 
@@ -42,7 +43,9 @@ int loadgame(){
 		return 1;
 	}
 	fread(board,sizeof(char),HEIGHT*WIDTH,savefile);
+	fread(&curr,sizeof(int),1,savefile);
 	fclose(savefile);
+	score=curr;
 	int foundc=0;
 	for(int i=0;i<HEIGHT;i++){
 		for(int j=0;j<WIDTH;j++){
@@ -299,7 +302,7 @@ int main()
 			break;
 		case 'p':
 		    saveg();
-			
+			break;
 		case 'q': 
 			printf("Game Over! Your Score: %d\n", score); 
 			return 0; 
