@@ -17,24 +17,39 @@
 #define DEMON 'X'
 #define PRIZE '$' 
 #define EVIL 'E'
-
+ typedef struct 
+ {
+	char type;
+	int emptyornot;
+ }info;
+ 
 // Global Variables are 
 // Declared here 
 int res = 0; 
 int score = 0; 
 int pacman_x, pacman_y,evil_x, evil_y; 
-char board[HEIGHT][WIDTH]; 
+info board[HEIGHT][WIDTH]; 
 int food = 0; 
 int curr = 0;
 int cspeed=0;
 
+void setinfo(int i,int j, char s){
+	board[i][j].type=s;
+	if(s==EMPTY){
+		board[i][j].emptyornot=1;
+	}
+	else{
+		board[i][j].emptyornot=0;
+	}
+
+}
 int saveg(){
 	FILE *savefile=fopen("saved_game.bin","wb");
 	if(savefile==NULL){
 		printf("error loading game...");
 		return 1;
 	}
-	fwrite(board,sizeof(char),HEIGHT*WIDTH,savefile);
+	fwrite(board,sizeof(info),HEIGHT*WIDTH,savefile);
 	fwrite(&curr,sizeof(int),1,savefile);
 	fwrite(&cspeed,sizeof(int),1,savefile);
 	fclose(savefile);
@@ -46,7 +61,7 @@ int loadgame(){
 		printf("error loading game...");
 		return 1;
 	}
-	fread(board,sizeof(char),HEIGHT*WIDTH,savefile);
+	fread(board,sizeof(info),HEIGHT*WIDTH,savefile);
 	fread(&curr,sizeof(int),1,savefile);
 	fread(&cspeed,sizeof(int),1,savefile);
 	fclose(savefile);
@@ -54,15 +69,15 @@ int loadgame(){
 	int foundc=0;
 	for(int i=0;i<HEIGHT;i++){
 		for(int j=0;j<WIDTH;j++){
-			if(board[i][j]==FOOD){
+			if(board[i][j].type==FOOD){
 				food++;
 			}
-			if(board[i][j]==PACMAN){
+			if(board[i][j].type==PACMAN){
 				pacman_x=j;
 				pacman_y=i;
 				foundc=1;
 			}
-            if(board[i][j]==EVIL){
+            if(board[i][j].type==EVIL){
 				evil_x=j;
 				evil_y=i;
 			}
@@ -81,10 +96,10 @@ void initialize()
 		for (int j = 0; j < WIDTH; j++) { 
 			if (i == 0 || j == WIDTH - 1 || j == 0 
 				|| i == HEIGHT - 1) { 
-				board[i][j] = WALL; 
+				setinfo(i,j,WALL); 
 			} 
 			else
-				board[i][j] = EMPTY; 
+				setinfo(i,j,EMPTY); 
 		} 
 	} 
 
@@ -94,8 +109,8 @@ void initialize()
 		int i = (rand() % (HEIGHT + 1)); 
 		int j = (rand() % (WIDTH + 1)); 
 
-		if (board[i][j] != WALL && board[i][j] != PACMAN) { 
-			board[i][j] = WALL; 
+		if (board[i][j].type != WALL && board[i][j].type != PACMAN) { 
+			setinfo(i,j,WALL); 
 			count--; 
 		} 
 	} 
@@ -104,9 +119,9 @@ void initialize()
 	while (val--) { 
 		int row = (rand() % (HEIGHT + 1)); 
 		for (int j = 3; j < WIDTH - 3; j++) { 
-			if (board[row][j] != WALL 
-				&& board[row][j] != PACMAN) { 
-				board[row][j] = WALL; 
+			if (board[row][j].type != WALL 
+				&& board[row][j].type != PACMAN) { 
+				setinfo(row,j,WALL);
 			} 
 		} 
 	} 
@@ -117,8 +132,8 @@ void initialize()
 		int i = (rand() % (HEIGHT + 1)); 
 		int j = (rand() % (WIDTH + 1)); 
 
-		if (board[i][j] != WALL && board[i][j] != PACMAN) { 
-			board[i][j] = DEMON; 
+		if (board[i][j].type != WALL && board[i][j].type != PACMAN) { 
+			setinfo(i,j,DEMON); 
 			count--; 
 		} 
 	}
@@ -129,8 +144,8 @@ void initialize()
 		evil_x=j;
 		evil_y=i; 
 
-		if (board[i][j] != WALL && board[i][j] != PACMAN && board[i][j] != DEMON) { 
-			board[i][j] = EVIL; 
+		if (board[i][j].type != WALL && board[i][j].type != PACMAN && board[i][j].type != DEMON) { 
+			setinfo(i,j,EVIL); 
 			count--; 
 		} 
 	}
@@ -141,8 +156,8 @@ void initialize()
 		int i = (rand() % (HEIGHT + 1)); 
 		int j = (rand() % (WIDTH + 1)); 
 
-		if (board[i][j] != WALL && board[i][j] != PACMAN && board[i][j] != DEMON && board[i][j] != EVIL) { 
-			board[i][j] = PRIZE; 
+		if (board[i][j].type != WALL && board[i][j].type != PACMAN && board[i][j].type != DEMON && board[i][j].type != EVIL) { 
+			setinfo(i,j,PRIZE); 
 			count--; 
 		} 
 	}
@@ -150,19 +165,19 @@ void initialize()
 	// Cursor at Center 
 	pacman_x = WIDTH / 2; 
 	pacman_y = HEIGHT / 2; 
-	board[pacman_y][pacman_x] = PACMAN; 
+	setinfo(pacman_y,pacman_x, PACMAN); 
 
 	// Points Placed 
 	for (int i = 0; i < HEIGHT; i++) { 
 		for (int j = 0; j < WIDTH; j++) { 
 			if (i % 2 == 0 && j % 2 == 0 
-				&& board[i][j] != WALL 
-				&& board[i][j] != EVIL
-				&& board[i][j] != PRIZE
-				&& board[i][j] != DEMON 
-				&& board[i][j] != PACMAN) { 
+				&& board[i][j].type != WALL 
+				&& board[i][j].type != EVIL
+				&& board[i][j].type != PRIZE
+				&& board[i][j].type != DEMON 
+				&& board[i][j].type != PACMAN) { 
 
-				board[i][j] = FOOD; 
+				setinfo(i,j,FOOD); 
 				food++; 
 			} 
 		} 
@@ -177,7 +192,7 @@ void draw()
 	// Drawing All the elements in the screen 
 	for (int i = 0; i < HEIGHT; i++) { 
 		for (int j = 0; j < WIDTH; j++) { 
-			printf("%c", board[i][j]); 
+			printf("%c", board[i][j].type); 
 		} 
 		printf("\n"); 
 	} 
@@ -191,8 +206,8 @@ void move(int move_x, int move_y)
 	int x = pacman_x + 2*move_x; 
 	int y = pacman_y + 2*move_y; 
 
-	if (board[y][x] != WALL) { 
-		if (board[y][x] == FOOD) { 
+	if (board[y][x].type != WALL) { 
+		if (board[y][x].type == FOOD) { 
 			score++; 
 			food--; 
 			curr++; 
@@ -201,17 +216,17 @@ void move(int move_x, int move_y)
 				return; 
 			} 
 		} 
-		else if(board[y][x] == PRIZE){
+		else if(board[y][x].type == PRIZE){
 			cspeed=cspeed+10;
 		}
-		else if (board[y][x] == DEMON || board[y][x] == EVIL) { 
+		else if (board[y][x].type == DEMON || board[y][x].type == EVIL) { 
 			res = 1; 
 		} 
 
-		board[pacman_y][pacman_x] = EMPTY; 
+		setinfo(pacman_y,pacman_x,EMPTY); 
 		pacman_x = x; 
 		pacman_y = y; 
-		board[pacman_y][pacman_x] = PACMAN; 
+		setinfo(pacman_y,pacman_x, PACMAN); 
 	} 
 	    cspeed--;
 		return;
@@ -220,8 +235,8 @@ void move(int move_x, int move_y)
 	int x = pacman_x + move_x; 
 	int y = pacman_y + move_y; 
 
-	if (board[y][x] != WALL) { 
-		if (board[y][x] == FOOD) { 
+	if (board[y][x].type != WALL) { 
+		if (board[y][x].type == FOOD) { 
 			score++; 
 			food--; 
 			curr++; 
@@ -230,17 +245,17 @@ void move(int move_x, int move_y)
 				return; 
 			} 
 		} 
-		else if(board[y][x] == PRIZE){
+		else if(board[y][x].type == PRIZE){
 			cspeed=cspeed+10;
 		}
-		else if (board[y][x] == DEMON|| board[y][x] == EVIL) { 
+		else if (board[y][x].type == DEMON|| board[y][x].type == EVIL) { 
 			res = 1; 
 		} 
 
-		board[pacman_y][pacman_x] = EMPTY; 
+		setinfo(pacman_y,pacman_x,EMPTY); 
 		pacman_x = x; 
 		pacman_y = y; 
-		board[pacman_y][pacman_x] = PACMAN; 
+		setinfo(pacman_y,pacman_x, PACMAN);
 	} 
 	}
 } 
@@ -300,11 +315,11 @@ void movevil(int emx,int emy){
     int x = evil_x + emx; 
 	int y = evil_y + emy; 
 
-	if (board[y][x] != WALL && board[y][x] != DEMON && board[y][x] != PRIZE &&board[y][x] != FOOD) { 
-		board[evil_y][evil_x] = EMPTY; 
+	if (board[y][x].type != WALL && board[y][x].type != DEMON && board[y][x].type != PRIZE &&board[y][x].type != FOOD) { 
+		setinfo(evil_y,evil_x,EMPTY); 
 		evil_x = x; 
 		evil_y = y; 
-		board[evil_y][evil_x] = EVIL; 
+		setinfo(evil_y,evil_x,EVIL); 
 	} 
 }
 void rme(){
