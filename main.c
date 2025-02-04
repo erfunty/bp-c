@@ -16,12 +16,13 @@
 #define EMPTY ' ' 
 #define DEMON 'X'
 #define PRIZE '$' 
+#define EVIL 'E'
 
 // Global Variables are 
 // Declared here 
 int res = 0; 
 int score = 0; 
-int pacman_x, pacman_y; 
+int pacman_x, pacman_y,evil_x, evil_y; 
 char board[HEIGHT][WIDTH]; 
 int food = 0; 
 int curr = 0;
@@ -119,13 +120,26 @@ void initialize()
 			count--; 
 		} 
 	}
+	count = 1; 
+	while (count != 0) { 
+		int i = (rand() % (HEIGHT + 1)); 
+		int j = (rand() % (WIDTH + 1));
+		evil_x=j;
+		evil_y=i; 
+
+		if (board[i][j] != WALL && board[i][j] != PACMAN && board[i][j] != DEMON) { 
+			board[i][j] = EVIL; 
+			count--; 
+		} 
+	}
+
 	// Putting prize in the Game 
 	count = 5; 
 	while (count != 0) { 
 		int i = (rand() % (HEIGHT + 1)); 
 		int j = (rand() % (WIDTH + 1)); 
 
-		if (board[i][j] != WALL && board[i][j] != PACMAN) { 
+		if (board[i][j] != WALL && board[i][j] != PACMAN && board[i][j] != DEMON && board[i][j] != EVIL) { 
 			board[i][j] = PRIZE; 
 			count--; 
 		} 
@@ -141,6 +155,7 @@ void initialize()
 		for (int j = 0; j < WIDTH; j++) { 
 			if (i % 2 == 0 && j % 2 == 0 
 				&& board[i][j] != WALL 
+				&& board[i][j] != EVIL
 				&& board[i][j] != PRIZE
 				&& board[i][j] != DEMON 
 				&& board[i][j] != PACMAN) { 
@@ -187,7 +202,7 @@ void move(int move_x, int move_y)
 		else if(board[y][x] == PRIZE){
 			cspeed=cspeed+10;
 		}
-		else if (board[y][x] == DEMON) { 
+		else if (board[y][x] == DEMON || board[y][x] == EVIL) { 
 			res = 1; 
 		} 
 
@@ -216,7 +231,7 @@ void move(int move_x, int move_y)
 		else if(board[y][x] == PRIZE){
 			cspeed=cspeed+10;
 		}
-		else if (board[y][x] == DEMON) { 
+		else if (board[y][x] == DEMON|| board[y][x] == EVIL) { 
 			res = 1; 
 		} 
 
@@ -278,6 +293,36 @@ int random_move(int *totalFood){
 
 	}
 }
+
+void movevil(int emx,int emy){
+    int x = evil_x + emx; 
+	int y = evil_y + emy; 
+
+	if (board[y][x] != WALL && board[y][x] != DEMON && board[y][x] != PRIZE) { 
+		board[evil_y][evil_x] = EMPTY; 
+		evil_x = x; 
+		evil_y = y; 
+		board[evil_y][evil_x] = EVIL; 
+	} 
+}
+void rme(){
+		int r=rand()%4;
+		switch (r) { 
+		case 0: 
+			movevil(0, -1); 
+			break; 
+		case 1: 
+			movevil(0, 1); 
+			break; 
+		case 2: 
+			movevil(-1, 0); 
+			break; 
+		case 3: 
+			movevil(1, 0); 
+			break;
+		}
+
+}
 // Main Function 
 int main() 
 { 
@@ -310,6 +355,8 @@ int main()
 	} 
 
 	while (1) { 
+		Sleep(1000);
+		rme();
 		draw(); 
 		printf("Total Food count: %d\n", totalFood); 
 		printf("Total Food eaten: %d\n", curr);
@@ -333,8 +380,9 @@ int main()
 		} 
 
 		// Taking the Input from the user 
+		if (kbhit()) {
 		ch = getch(); 
-
+		}
 		// Moving According to the 
 		// input character 
 		switch (ch) { 
