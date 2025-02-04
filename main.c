@@ -128,7 +128,7 @@ void initialize()
 			count--; 
 		} 
 	}
-
+    cspeed=0;
 	// Cursor at Center 
 	pacman_x = WIDTH / 2; 
 	pacman_y = HEIGHT / 2; 
@@ -168,8 +168,7 @@ void draw()
 // Function enables to move the Cursor 
 void move(int move_x, int move_y) 
 { 
-	while (cspeed>0)
-	{
+    if(cspeed>0){
 	int x = pacman_x + 2*move_x; 
 	int y = pacman_y + 2*move_y; 
 
@@ -184,7 +183,7 @@ void move(int move_x, int move_y)
 			} 
 		} 
 		else if(board[y][x] == PRIZE){
-			cspeed+=10;
+			cspeed=cspeed+10;
 		}
 		else if (board[y][x] == DEMON) { 
 			res = 1; 
@@ -196,9 +195,9 @@ void move(int move_x, int move_y)
 		board[pacman_y][pacman_x] = PACMAN; 
 	} 
 	    cspeed--;
-		break;
+		return;
 	}
-	
+	else{
 	int x = pacman_x + move_x; 
 	int y = pacman_y + move_y; 
 
@@ -213,7 +212,7 @@ void move(int move_x, int move_y)
 			} 
 		} 
 		else if(board[y][x] == PRIZE){
-			cspeed+=10;
+			cspeed=cspeed+10;
 		}
 		else if (board[y][x] == DEMON) { 
 			res = 1; 
@@ -224,6 +223,7 @@ void move(int move_x, int move_y)
 		pacman_y = y; 
 		board[pacman_y][pacman_x] = PACMAN; 
 	} 
+	}
 } 
 int random_move(int *totalFood){
 	int rch;
@@ -310,7 +310,10 @@ int main()
 	while (1) { 
 		draw(); 
 		printf("Total Food count: %d\n", totalFood); 
-		printf("Total Food eaten: %d\n", curr); 
+		printf("Total Food eaten: %d\n", curr);
+		if(cspeed>0){
+			printf("Number of moving speeds:%d",cspeed);
+		} 
 		if (res == 1) { 
 			// Clear screen 
 			system("cls"); 
