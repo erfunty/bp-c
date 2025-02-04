@@ -61,9 +61,11 @@ int loadgame(){
 				pacman_x=j;
 				pacman_y=i;
 				foundc=1;
-				break;
 			}
-
+            if(board[i][j]==EVIL){
+				evil_x=j;
+				evil_y=i;
+			}
 		}
 	}
 	if (!foundc) {
@@ -298,7 +300,7 @@ void movevil(int emx,int emy){
     int x = evil_x + emx; 
 	int y = evil_y + emy; 
 
-	if (board[y][x] != WALL && board[y][x] != DEMON && board[y][x] != PRIZE) { 
+	if (board[y][x] != WALL && board[y][x] != DEMON && board[y][x] != PRIZE &&board[y][x] != FOOD) { 
 		board[evil_y][evil_x] = EMPTY; 
 		evil_x = x; 
 		evil_y = y; 
@@ -407,7 +409,8 @@ int main()
 		case 'q': 
 			printf("Game Over! Your Score: %d\n", score); 
 			return 0; 
-		} 
+		}
+		ch='k';
 	} 
 
 	return 0; 
