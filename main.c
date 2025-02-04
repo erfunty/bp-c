@@ -35,6 +35,7 @@ int saveg(){
 	}
 	fwrite(board,sizeof(char),HEIGHT*WIDTH,savefile);
 	fwrite(&curr,sizeof(int),1,savefile);
+	fwrite(&cspeed,sizeof(int),1,savefile);
 	fclose(savefile);
 }
 
@@ -46,6 +47,7 @@ int loadgame(){
 	}
 	fread(board,sizeof(char),HEIGHT*WIDTH,savefile);
 	fread(&curr,sizeof(int),1,savefile);
+	fread(&cspeed,sizeof(int),1,savefile);
 	fclose(savefile);
 	score=curr;
 	int foundc=0;
@@ -312,7 +314,7 @@ int main()
 		printf("Total Food count: %d\n", totalFood); 
 		printf("Total Food eaten: %d\n", curr);
 		if(cspeed>0){
-			printf("Number of moving speeds:%d",cspeed);
+			printf("Number of moving speeds:%d\n",cspeed);
 		} 
 		if (res == 1) { 
 			// Clear screen 
